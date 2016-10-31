@@ -1,12 +1,14 @@
 // Include the Main React Dependencies
 var React = require('react');
 var ReactDOM = require('react-dom');
-var DatePicker = require('react-datepicker');
+var DatePicker = require('react-daterange-picker');
 var moment = require('moment');
 import Select from 'react-select';
 
+import 'react-widgets/lib/less/react-widgets.less';
+import DropdownList from 'react-widgets/lib/DropdownList';
 
-//require('react-datepicker/dist/react-datepicker.min.css');
+
 function logChange(val) {
 	console.log("Selected: " + val);
 }
@@ -81,13 +83,16 @@ var GifGen = React.createClass({
 					<div id="gifContainer"><img id="theGif" src={this.state.gifURL} /></div>
 					{/*<Image src={gifURL} width={500} height={300} mode='fit' /> */}
 
+<DropdownList/>
+
+				{/*
 					<Select
 					    name="form-field-name"
 					    value="one"
 					    options={options}
 					    onChange={logChange}
 					/>
-
+					*/}
 					{/*Inserted the variables and simple calculations using curly brackets */}
 					<hr />
 						<DatePicker selected={this.state.startDate} onChange={this.handleChangeStartDate} />
