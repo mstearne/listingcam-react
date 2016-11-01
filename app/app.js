@@ -1,24 +1,25 @@
 // Include the Main React Dependencies
 var React = require('react');
 var ReactDOM = require('react-dom');
-var DatePicker = require('react-daterange-picker');
+var DateRangePicker = require('react-daterange-picker');
 var moment = require('moment');
-import Select from 'react-select';
+import {} from 'moment-range';
+import timekeeper from 'timekeeper';
+var Select = require('react-select');
+//var DatePicker = require('./datepicker.js');
+const CAMS = require('./data/cams');
 
-import 'react-widgets/lib/less/react-widgets.less';
-import DropdownList from 'react-widgets/lib/DropdownList';
-
+// console.log(CAMS.CAMS);
+// console.log(CAMS.CAMS[Math.floor(Math.random()*CAMS.CAMS.length)].value);
 
 function logChange(val) {
 	console.log("Selected: " + val);
 }
 
 // Here we create a set of Javascript variables
-var name = "Ahmed";
-var num1 = 1;
-var num2 = 2;
-
-var cams = ['philly1','philly4','philly3','seaisle556','seaisle555','seaisle557'];
+// var name = "Ahmed";
+// var num1 = 1;
+// var num2 = 2;
 
 
 var GifGen = React.createClass({
@@ -26,19 +27,19 @@ var GifGen = React.createClass({
 	toggleLiked: function() {
       this.setState({
         liked: !this.state.liked,
-		gifURL: 'http://listingcam.com/includes/animegif/gif.php?cam_id='+cams[Math.floor(Math.random()*cams.length)]+'&perday_last=5&size=400',
-		caption: cams[Math.floor(Math.random()*cams.length)]
+		gifURL: 'http://listingcam.com/includes/animegif/gif.php?cam_id=philly4&perday_last=5&size=400',
+		caption: 'hllo'
 
       });
     },
 	getInitialState: function() {
       return {
         liked: false,
-		gifURL: 'http://listingcam.com/includes/animegif/gif.php?cam_id=philly4&perday_last=5&size=400',
-		caption: 'hello again',
+		gifURL: 'http://listingcam.com/includes/animegif/gif.php?cam_id='+CAMS.CAMS[Math.floor(Math.random()*CAMS.CAMS.length)].value+'&perday_last=5&size=400',
+		caption: 'Welcome to ListingCam Giffer',
 		startDate: moment().add(-4, 'days'),
 		endDate: moment(),
-		camID: 'philly4'
+		camID: CAMS.CAMS[Math.floor(Math.random()*CAMS.CAMS.length)].value
       };
     },
 	handleChangeStartDate: function(date) {
@@ -49,6 +50,13 @@ var GifGen = React.createClass({
 	  		  startDate: date
 	        });
 		}
+    },
+	changeCam: function(val) {
+		console.log(val);
+		this.setState({
+  		gifURL: 'http://listingcam.com/includes/animegif/gif.php?cam_id='+val.value+'&perday_last=5&size=400',
+		caption: val.value
+        });
     },
 	handleChangeEndDate: function(date) {
 		if(date>moment()){
@@ -67,12 +75,6 @@ var GifGen = React.createClass({
 	  var buttonClass = this.state.liked ? 'active' : '';
 
 
-	  var options = [
-	      { value: 'one', label: 'One' },
-	      { value: 'two', label: 'Two' }
-	  ];
-
-
     return (
 
 		<div className='main-container'>
@@ -80,29 +82,27 @@ var GifGen = React.createClass({
 			<div className="container">
 
 				<div className="jumbotron">
-					<div id="gifContainer"><img id="theGif" src={this.state.gifURL} /></div>
+					<h1>{this.state.caption}</h1>
+					<div id="gifContainer" className="text-center"><img id="theGif" src={this.state.gifURL} width="400" height="225" /></div>
 					{/*<Image src={gifURL} width={500} height={300} mode='fit' /> */}
 
-<DropdownList/>
-
-				{/*
+					<div>
 					<Select
-					    name="form-field-name"
-					    value="one"
-					    options={options}
-					    onChange={logChange}
+					    name="camSelect"
+					    value=""
+					    options={CAMS.CAMS}
+					    onChange={this.changeCam}
 					/>
-					*/}
-					{/*Inserted the variables and simple calculations using curly brackets */}
-					<hr />
-						<DatePicker selected={this.state.startDate} onChange={this.handleChangeStartDate} />
-						<DatePicker selected={this.state.endDate} onChange={this.handleChangeEndDate} />
+					</div>
+					<div>
+					<DateRangePicker
+			          numberOfCalendars={2}
+			          selectionType="range"
+			          minimumDate={new Date()} />
+			      </div>
 
-
-						<select id="camSelect" select="this.state.camID"></select>
 						<div className='bar'>
-				          <button onClick={this.toggleLiked} className={buttonClass}>♥</button>
-				          <span>{this.state.caption}
+				          <span>
 							<br />Start Date: {(this.state.startDate).toString()}
 							<br />End Date: {(this.state.endDate).toString()}
 							</span>
