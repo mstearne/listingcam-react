@@ -8,6 +8,15 @@ var Select = require('react-select');
 //var DatePicker = require('./datepicker.js');
 const CAMS = require('./data/cams');
 const today = moment();
+var SliderSpeed = require('nw-react-slider')
+var SliderSize = require('nw-react-slider')
+
+
+//import Slider from 'react-rangeslider'
+//var SpeedSlider = require('./speedslider');
+
+
+//import Slider from 'react-rangeslider';
 
 /// this is the main URL that will be updated into different configs as
 /// users change the options
@@ -18,7 +27,7 @@ var camURL = {
 	perday_last:'&perday_hr=',
 	perday_lastV:5,
 	size:'&size=',
-	sizeV:100,
+	sizeV:350,
 	perday_hr:'&perday_hr=',
 	perday_hrV:'',
 	perday_start:'&perday_start=',
@@ -32,12 +41,6 @@ var camURL = {
 	logo: '&logo=',
 	logoV: ''
 };
-function genGifURL(){
-	var arr = Object.keys(camURL).reduce(function(res, v) {
-	    return res.concat(camURL[v]);
-	}, []);
-	return arr.join("");
- }
 
 var camSizeOptions = [
 	{ value: 100, label: 100 },
@@ -72,12 +75,13 @@ var GifGen = React.createClass({
 	getInitialState: function() {
       return {
         liked: false,
-		gifURL: genGifURL(),
+		gifURL: this.genGifURL(),
 		caption: 'ListingCam Giffer',
 		startDate: moment().add(-4, 'days'),
 		endDate: moment(),
 		camID: CAMS.CAMS[Math.floor(Math.random()*CAMS.CAMS.length)].value,
-		notes: 'notes'
+		notes: 'notes',
+		modified: false
       };
     },
 	handleChangeStartDate: function(date) {
@@ -93,18 +97,26 @@ var GifGen = React.createClass({
 		console.log(val);
 		camURL.cam_idV=val.value;
 		camURL.cityV=val.label.substring(0,15);
-
 		this.setState({
-  		gifURL: genGifURL(),
-		caption: val.label
-        });
+			modified: true
+		});
+
+		// this.setState({
+  // 		gifURL: this.genGifURL(),
+		// caption: val.label
+        // });
     },
 	changeCamSize: function(val) {
 		console.log(val);
-		camURL.sizeV=val.value;
+		camURL.sizeV=val;
+
 		this.setState({
-  		gifURL: genGifURL()
+  		imgSize: val
         });
+		// this.setState({
+  // 		gifURL: this.genGifURL(),
+		// notes: val
+        // });
     },
 	handleChangeDate(range){
         console.log(range.endDate); // Momentjs object
@@ -117,21 +129,41 @@ var GifGen = React.createClass({
 			camURL.perday_startV = moment(range.startDate).format('YYYY-MM-DD').toString();
 			camURL.perday_endV = moment(range.endDate).format('YYYY-MM-DD').toString();
 
-			this.setState({
-				startDate: camURL.perday_startV,
-				endDate: camURL.perday_endV,
-				gifURL: genGifURL(),
-				notes: genGifURL()
-			});
+			// this.setState({
+			// 	startDate: camURL.perday_startV,
+			// 	endDate: camURL.perday_endV,
+			// 	gifURL: this.genGifURL(),
+			// 	notes: this.genGifURL()
+			// });
 		}
     },
 	handleImageLoaded() {
-		alert("loaded")
-//      this.setState({ imageStatus: 'loaded' });
+		console.log("Image Loaded");
+//      this.setState({ notes: 'loaded' });
   	},
+	handleSpeedChange(slider) {
+		console.log(slider);
+		camURL.speedV = slider;
+
+		this.setState({
+			imgSpeed: slider
+		});
+  	},
+	genGifURL(){
+		var arr = Object.keys(camURL).reduce(function(res, v) {
+		    return res.concat(camURL[v]);
+		}, []);
+		return arr.join("");
+	},
+	updateImage(){
+		this.setState({
+  		gifURL: this.genGifURL(),
+		notes: this.genGifURL()
+        });
+	},
   	render: function() {
 	  var buttonClass = this.state.liked ? 'active' : '';
-
+	  var updateButtonClass = this.state.modified ? 'active' : 'inactive';
 
     return (
 
@@ -139,11 +171,16 @@ var GifGen = React.createClass({
 			<div className="container">
 				<div className="jumbotron">
 					<h2>{this.state.caption}</h2>
-					<div id="gifContainer" className="text-center">
-						<img id="theGif" src={this.state.gifURL} onLoad={this.handleImageLoaded.bind(this)} /></div>
 					{/*<Image src={gifURL} width={500} height={300} mode='fit' /> */}
 
-					<div className="container-fluid">
+					<div className="container-fluid bgWhite">
+						<div className="row">
+							<div className="col-md-12">
+								<div id="gifContainer" className="text-center">
+									<img id="theGif" src={this.state.gifURL} onLoad={this.handleImageLoaded} />
+								</div>
+							</div>
+						</div>
 						<div className="row">
 							<div className="col-md-6">
 								<DateRange
@@ -153,21 +190,62 @@ var GifGen = React.createClass({
 							</div>
 							<div className="col-md-6">
 								<div>
-									<Select
+									<label>Camera</label> <Select
 										name="camSelect"
 										value=""
 										options={CAMS.CAMS}
-										onChange={this.changeCam}
-									/>
+										onChange={this.changeCam} />
 								</div>
 								<div>
-									<Select
-										name="sizeSelect"
-										value=""
-										options={camSizeOptions}
-										onChange={this.changeCamSize}
-									/>
-								</div>
+
+									<div className="container-fluid">
+										<div className="row">
+											<div className="col-md-1">
+												<label>Width</label>
+											</div>
+											<div className="col-md-10">
+												<SliderSize
+												  value={350}
+												  min={150}
+												  max={1000}
+												  markers={[{value: 3, label: 'Three'}, {value: 8, label: 'Eight'}]}
+												  onChange={this.changeCamSize} className="sliders" />
+											</div>
+											<div className="col-md-1">
+												{this.state.imgSize}
+											</div>
+										</div>
+									</div>
+
+			  					</div>
+								<br />
+									<br />
+										<br />
+								<div>
+									<div className="container-fluid">
+										<div className="row">
+											<div className="col-md-1">
+												<label>Speed</label>
+											</div>
+											<div className="col-md-10">
+												<SliderSpeed
+												  value={40}
+												  min={0}
+												  max={200}
+												  markers={[{value: 3, label: 'Three'}, {value: 8, label: 'Eight'}]}
+												  onChange={this.handleSpeedChange} className="sliders" />
+											</div>
+											<div className="col-md-1">
+												{this.state.imgSpeed}
+											</div>
+										</div>
+									</div>
+
+			  					</div>
+								<br />
+									<br />
+										<br />
+										<button onClick={this.updateImage} className="{updateButtonClass}">Update Image</button>
 							</div>
 						</div>
 					</div>
@@ -188,4 +266,4 @@ var GifGen = React.createClass({
 });
 
 
-ReactDOM.render(<GifGen src='{genGifURL()}' caption='Hong Kong!' />, document.getElementById('app'));
+ReactDOM.render(<GifGen src='{this.genGifURL()}' caption='Hong Kong!' />, document.getElementById('app'));
