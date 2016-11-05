@@ -12,22 +12,14 @@ var SliderSpeed = require('nw-react-slider')
 var SliderSize = require('nw-react-slider')
 
 
-//import Slider from 'react-rangeslider'
-//var SpeedSlider = require('./speedslider');
-
-
-//import Slider from 'react-rangeslider';
-
-/// this is the main URL that will be updated into different configs as
-/// users change the options
 var camURL = {
 	start_url: 'http://listingcam.com/includes/animegif/gif.php?',
 	cam_id:'&cam_id=',
-	cam_idV:'philly4',
+	cam_idV:'',
 	perday_last:'&perday_hr=',
-	perday_lastV:5,
+	perday_lastV:'',
 	size:'&size=',
-	sizeV:350,
+	sizeV:'',
 	perday_hr:'&perday_hr=',
 	perday_hrV:'',
 	perday_start:'&perday_start=',
@@ -37,56 +29,65 @@ var camURL = {
 	speed: '&speed=',
 	speedV: '',
 	city: '&city=',
-	cityV: 'Philadelphia',
+	cityV: '',
 	logo: '&logo=',
 	logoV: ''
 };
 
-var camSizeOptions = [
-	{ value: 100, label: 100 },
-	{ value: 200, label: 200 },
-	{ value: 250, label: 250 },
-	{ value: 300, label: 300 },
-	{ value: 400, label: 400 },
-	{ value: 500, label: 500 },
-	{ value: 600, label: 600 },
-	{ value: 700, label: 700 },
-	{ value: 800, label: 800 }
-];
-
-//http://listingcam.com/includes/animegif/gif.php?cam_id=battleshipnj563&perday_start=2016-06-01&perday_end=2016-10-01&speed=30&city=Philadelphia&size=700&logo=accuweather-logo.png&perday_hr=20&a
-
-
-// console.log(CAMS.CAMS);
-// console.log(CAMS.CAMS[Math.floor(Math.random()*CAMS.CAMS.length)].value);
-
 function logChange(val) {
 	console.log("Selected: " + val);
 }
-
-// Here we create a set of Javascript variables
-// var name = "Ahmed";
-// var num1 = 1;
-// var num2 = 2;
-
 
 var GifGen = React.createClass({
 
 	getInitialState: function() {
       return {
         liked: false,
-		gifURL: this.genGifURL(),
 		caption: 'ListingCam Giffer',
 		startDate: moment().add(-4, 'days'),
 		endDate: moment(),
-		camID: CAMS.CAMS[Math.floor(Math.random()*CAMS.CAMS.length)].value,
-		notes: 'notes',
-		modified: false,
-		imgWidth: 350,
-		imgMin: 200,
-		imgMax: 1000
+		settingsModified: false,
+		imgWidth: 550,
+		imgMin: 150,
+		imgMax: 1000,
+		imgSpeed: 10,
+		imgSpeedMin: 1,
+		imgSpeedMax: 100,
+		loadingMessageClass: 'show',
+		gifContainerClass: 'hidden',
       };
     },
+	componentWillMount: function(){
+		// Set initial random cam
+		this._mounted = false;
+
+		/// pull a random camera from the list of cameras available
+		var firstCam = CAMS.CAMS[Math.floor(Math.random()*CAMS.CAMS.length)];
+
+		camURL.cam_idV = firstCam.value;
+		camURL.camID = firstCam.value;
+		this.state.camID = firstCam.value;
+		camURL.cityV = firstCam.label;
+		camURL.sizeV = this.state.imgWidth;
+		camURL.speedV = this.state.imgSpeed;
+
+		this.genGifURL();
+    	return { /* something here */};
+	},
+	componentDidMount: function(){
+
+		this._isMounted = true;
+
+		this.setState({
+		  gifURL: this.genGifURL()
+		});
+
+
+
+		return { /* something here */};
+	},
+
+
 	handleChangeStartDate: function(date) {
 		if(date>this.state.endDate){
 			alert("start date must be before end date");
@@ -99,76 +100,86 @@ var GifGen = React.createClass({
 	changeCam: function(val) {
 		console.log(val);
 		camURL.cam_idV=val.value;
-		camURL.cityV=val.label.substring(0,15);
+		if(this.state.imgWidth<200){
+			camURL.cityV=val.label.substring(0,15);
+		}else{
+			camURL.cityV=val.label;
+		}
 		this.setState({
-			modified: true
+			settingsModified: true,
+			camID: val.value,
 		});
-
-		// this.setState({
-  // 		gifURL: this.genGifURL(),
-		// caption: val.label
-        // });
     },
-	changeCamSize: function(val) {
+	changeImgWidth: function(val) {
 		console.log(val);
 		camURL.sizeV=val;
 
 		this.setState({
-  		imgSize: val,
-		imgWidth: val
+			imgWidth: val,
+			settingsModified: true
         });
-		// this.setState({
-  // 		gifURL: this.genGifURL(),
-		// notes: val
-        // });
     },
 	handleChangeDate(range){
         console.log(range.endDate); // Momentjs object
 		if(range.endDate>moment()){
 			alert("Dates cannot be in the future");
-//			alert("up2")
 		}else{
-			// alert(JSON.stringify(range, null, 4))
-			// alert(moment(range.startDate).format('YYYY-MM-DD').toString())
 			camURL.perday_startV = moment(range.startDate).format('YYYY-MM-DD').toString();
 			camURL.perday_endV = moment(range.endDate).format('YYYY-MM-DD').toString();
 
-			// this.setState({
-			// 	startDate: camURL.perday_startV,
-			// 	endDate: camURL.perday_endV,
-			// 	gifURL: this.genGifURL(),
-			// 	notes: this.genGifURL()
-			// });
+			 this.setState({
+				 settingsModified: true
+			 });
 		}
     },
 	handleImageLoaded() {
 		console.log("Image Loaded");
-//      this.setState({ notes: 'loaded' });
+
+		this.setState({
+			notes: 'loaded',
+			loadingMessageClass: 'hidden',
+			gifContainerClass: 'show',
+			settingsModified: false
+		});
   	},
-	handleSpeedChange(slider) {
+	changeImgSpeed(slider) {
 		console.log(slider);
 		camURL.speedV = slider;
 
 		this.setState({
-			imgSpeed: slider
+			imgSpeed: slider,
+			settingsModified: true
 		});
   	},
 	genGifURL(){
 		var arr = Object.keys(camURL).reduce(function(res, v) {
 		    return res.concat(camURL[v]);
 		}, []);
-		return arr.join("");
+		var url=arr.join("");
+
+		if (this._mounted){
+			this.setState({
+				notes: url
+			});
+		}else{
+			console.log(url);
+		}
+
+		return url;
 	},
 	updateImage(){
 		this.setState({
-  		gifURL: this.genGifURL(),
-		notes: this.genGifURL()
+	  		gifURL: this.genGifURL(),
+			loadingMessageClass: 'show',
+			gifContainerClass: 'hidden',
+			settingsModified: false
         });
+
 	},
   	render: function() {
 	  var buttonClass = this.state.liked ? 'active' : '';
-	  var updateButtonClass = this.state.modified ? 'active' : 'inactive';
-
+	  var loadingMessageClass = this.state.loadingMessageClass ? 'show' : 'hidden';
+	  var updateImageButtonClass = this.state.settingsModified ? 'show' : 'hidden';
 
     return (
 
@@ -179,27 +190,38 @@ var GifGen = React.createClass({
 					{/*<Image src={gifURL} width={500} height={300} mode='fit' /> */}
 					<div className="container-fluid bgWhite">
 						<div className="row">
-							<div className="col-md-12">
+							<div className="col-md-12 text-center">
+								<div>
+									<Select
+										name="camSelect"
+										value={this.state.camID}
+										options={CAMS.CAMS}
+										onChange={this.changeCam} />
+								</div>
+
+								<div id="loadingMessage" className={this.state.loadingMessageClass}>
+									<div className="text-center">
+									<div className="uil-cube-css" ><div></div><div></div><div></div><div></div></div>
+									</div>
+								</div>
+								<div className={this.state.gifContainerClass}>
 								<div id="gifContainer" className="text-center">
 									<img id="theGif" src={this.state.gifURL} onLoad={this.handleImageLoaded} />
 								</div>
+								</div>
+
+
+
 							</div>
 						</div>
 						<div className="row">
 							<div className="col-md-6">
 								<DateRange
 				                    onChange={this.handleChangeDate}
-									calendars="1"
+									calendars="2"
 				                />
 							</div>
 							<div className="col-md-6">
-								<div>
-									<label>Camera</label> <Select
-										name="camSelect"
-										value=""
-										options={CAMS.CAMS}
-										onChange={this.changeCam} />
-								</div>
 								<div>
 
 									<div className="container-fluid">
@@ -213,10 +235,10 @@ var GifGen = React.createClass({
 												  min={this.state.imgMin}
 												  max={this.state.imgMax}
 												  step={20}
-												  onChange={this.changeCamSize} className="sliders" />
+												  onChange={this.changeImgWidth} className="sliders" />
 											</div>
 											<div className="col-md-1">
-												{this.state.imgSize}
+												{this.state.imgWidth}
 											</div>
 										</div>
 									</div>
@@ -233,11 +255,10 @@ var GifGen = React.createClass({
 											</div>
 											<div className="col-md-10">
 												<SliderSpeed
-												  value={40}
-												  min={0}
-												  max={200}
-												  markers={[{value: 3, label: 'Three'}, {value: 8, label: 'Eight'}]}
-												  onChange={this.handleSpeedChange} className="sliders" />
+												  value={this.state.imgSpeed}
+												  min={this.state.imgSpeedMin}
+												  max={this.state.imgSpeedMax}
+												  onChange={this.changeImgSpeed} className="sliders" />
 											</div>
 											<div className="col-md-1">
 												{this.state.imgSpeed}
@@ -249,7 +270,9 @@ var GifGen = React.createClass({
 								<br />
 									<br />
 										<br />
-										<button onClick={this.updateImage} className="{updateButtonClass}">Update Image</button>
+										<div className={this.state.updateImageButtonClass}>
+										<button onClick={this.updateImage}>Update Image</button>
+										</div>
 							</div>
 						</div>
 					</div>
@@ -257,8 +280,6 @@ var GifGen = React.createClass({
 
 						<div className='bar'>
 				          <span>
-							<br />Start Date: {(this.state.startDate).toString()}
-							<br />End Date: {(this.state.endDate).toString()}
 							<br />{this.state.notes}
 							</span>
 				        </div>
