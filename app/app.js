@@ -81,7 +81,10 @@ var GifGen = React.createClass({
 		endDate: moment(),
 		camID: CAMS.CAMS[Math.floor(Math.random()*CAMS.CAMS.length)].value,
 		notes: 'notes',
-		modified: false
+		modified: false,
+		imgWidth: 350,
+		imgMin: 200,
+		imgMax: 1000
       };
     },
 	handleChangeStartDate: function(date) {
@@ -111,7 +114,8 @@ var GifGen = React.createClass({
 		camURL.sizeV=val;
 
 		this.setState({
-  		imgSize: val
+  		imgSize: val,
+		imgWidth: val
         });
 		// this.setState({
   // 		gifURL: this.genGifURL(),
@@ -165,6 +169,7 @@ var GifGen = React.createClass({
 	  var buttonClass = this.state.liked ? 'active' : '';
 	  var updateButtonClass = this.state.modified ? 'active' : 'inactive';
 
+
     return (
 
 		<div className='main-container'>
@@ -172,7 +177,6 @@ var GifGen = React.createClass({
 				<div className="jumbotron">
 					<h2>{this.state.caption}</h2>
 					{/*<Image src={gifURL} width={500} height={300} mode='fit' /> */}
-
 					<div className="container-fluid bgWhite">
 						<div className="row">
 							<div className="col-md-12">
@@ -205,10 +209,10 @@ var GifGen = React.createClass({
 											</div>
 											<div className="col-md-10">
 												<SliderSize
-												  value={350}
-												  min={150}
-												  max={1000}
-												  markers={[{value: 3, label: 'Three'}, {value: 8, label: 'Eight'}]}
+												  value={this.state.imgWidth}
+												  min={this.state.imgMin}
+												  max={this.state.imgMax}
+												  step={20}
 												  onChange={this.changeCamSize} className="sliders" />
 											</div>
 											<div className="col-md-1">

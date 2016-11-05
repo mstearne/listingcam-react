@@ -781,7 +781,7 @@ clap@^1.0.9:
   dependencies:
     chalk "^1.1.3"
 
-classnames@^2.1.1, classnames@^2.1.2, classnames@^2.2.4, classnames@^2.2.5:
+classnames@^2.1.1, classnames@^2.1.2, classnames@^2.2.0, classnames@^2.2.1, classnames@^2.2.3, classnames@^2.2.4, classnames@^2.2.5:
   version "2.2.5"
   resolved "https://registry.yarnpkg.com/classnames/-/classnames-2.2.5.tgz#fb3801d453467649ef3603c7d61a02bd129bde6d"
 
@@ -1300,6 +1300,10 @@ fs.realpath@^1.0.0:
   version "1.0.0"
   resolved "https://registry.yarnpkg.com/fs.realpath/-/fs.realpath-1.0.0.tgz#1504ad2523158caa40db4a2787cb01411994ea4f"
 
+fs@0.0.1-security:
+  version "0.0.1-security"
+  resolved "https://registry.yarnpkg.com/fs/-/fs-0.0.1-security.tgz#8a7bd37186b6dddf3813f23858b57ecaaf5e41d4"
+
 fsevents@^1.0.0:
   version "1.0.14"
   resolved "https://registry.yarnpkg.com/fsevents/-/fsevents-1.0.14.tgz#558e8cc38643d8ef40fe45158486d0d25758eee4"
@@ -1803,6 +1807,10 @@ lodash.words@^3.0.0:
   dependencies:
     lodash._root "^3.0.0"
 
+lodash@^4.0.1:
+  version "4.16.6"
+  resolved "https://registry.yarnpkg.com/lodash/-/lodash-4.16.6.tgz#d22c9ac660288f3843e16ba7d2b5d06cca27d777"
+
 lodash@^4.2.0:
   version "4.16.4"
   resolved "https://registry.yarnpkg.com/lodash/-/lodash-4.16.4.tgz#01ce306b9bad1319f2a5528674f88297aeb70127"
@@ -2028,6 +2036,14 @@ num2fraction@^1.2.2:
 number-is-nan@^1.0.0:
   version "1.0.1"
   resolved "https://registry.yarnpkg.com/number-is-nan/-/number-is-nan-1.0.1.tgz#097b602b53422a522c1afb8790318336941a011d"
+
+nw-react-slider@^2.0.1:
+  version "2.0.1"
+  resolved "https://registry.yarnpkg.com/nw-react-slider/-/nw-react-slider-2.0.1.tgz#d4e8ac968792baf5c5a19286499ced2ad178cc66"
+  dependencies:
+    classnames "^2.2.3"
+    lodash "^4.0.1"
+    react-draggable "1.3.7"
 
 oauth-sign@~0.8.1:
   version "0.8.2"
@@ -2476,6 +2492,14 @@ rc@~1.1.6:
   version "15.3.2"
   resolved "https://registry.yarnpkg.com/react-addons-pure-render-mixin/-/react-addons-pure-render-mixin-15.3.2.tgz#c5f54764667ead26e6cdf7178b6c8dbbd8463ec2"
 
+react-date-range@^0.2.4:
+  version "0.2.4"
+  resolved "https://registry.yarnpkg.com/react-date-range/-/react-date-range-0.2.4.tgz#e016e820691ae66e13464e25c1e1d748dbbc7a09"
+  dependencies:
+    classnames "^2.2.1"
+    moment "^2.10.6"
+    react ">=0.13.0"
+
 react-datepicker@^0.33.0:
   version "0.33.0"
   resolved "https://registry.yarnpkg.com/react-datepicker/-/react-datepicker-0.33.0.tgz#78b8d85e54aef2ff00c9c562d3cf7657fdc367e4"
@@ -2500,9 +2524,19 @@ react-dom@^15.3.2:
   version "15.3.2"
   resolved "https://registry.yarnpkg.com/react-dom/-/react-dom-15.3.2.tgz#c46b0aa5380d7b838e7a59c4a7beff2ed315531f"
 
+react-draggable@1.3.7:
+  version "1.3.7"
+  resolved "https://registry.yarnpkg.com/react-draggable/-/react-draggable-1.3.7.tgz#729bde4bd1e717c395b228c775e837695d50c2b2"
+  dependencies:
+    classnames "^2.2.0"
+
 react-input-autosize@^1.1.0:
   version "1.1.0"
   resolved "https://registry.yarnpkg.com/react-input-autosize/-/react-input-autosize-1.1.0.tgz#3fe1ac832387d8abab85f6051ceab1c9e5570853"
+
+react-input-range@^0.9.2:
+  version "0.9.2"
+  resolved "https://registry.yarnpkg.com/react-input-range/-/react-input-range-0.9.2.tgz#5791f917b1ad7497c1f7fd9c3ddaffdebcff825c"
 
 react-onclickoutside@^4.8.0:
   version "4.9.0"
@@ -2510,12 +2544,25 @@ react-onclickoutside@^4.8.0:
   dependencies:
     object-assign "^4.0.1"
 
+react-rangeslider@^1.0.9:
+  version "1.0.9"
+  resolved "https://registry.yarnpkg.com/react-rangeslider/-/react-rangeslider-1.0.9.tgz#cbef46b9bee8aaf9a191292ae7ef19b272d7ec83"
+  dependencies:
+    classnames "^2.2.3"
+
 react-select@^1.0.0-rc.2:
   version "1.0.0-rc.2"
   resolved "https://registry.yarnpkg.com/react-select/-/react-select-1.0.0-rc.2.tgz#9fc11b149a3dc1ac831289d21b40a59742f82f8d"
   dependencies:
     classnames "^2.2.4"
     react-input-autosize "^1.1.0"
+
+react-spinkit@^1.1.11:
+  version "1.1.11"
+  resolved "https://registry.yarnpkg.com/react-spinkit/-/react-spinkit-1.1.11.tgz#a08e37437d46af16ce7b9c87904b8e786b1359a3"
+  dependencies:
+    classnames "^2.2.3"
+    object-assign "^4.1.0"
 
 react-widgets@^3.4.4:
   version "3.4.4"
@@ -2532,7 +2579,7 @@ react-widgets@^3.4.4:
     deconstruct-number-format "0.0.1"
     format-number-with-string "0.0.2"
 
-react@^15.3.2:
+react@^15.3.2, react@>=0.13.0:
   version "15.3.2"
   resolved "https://registry.yarnpkg.com/react/-/react-15.3.2.tgz#a7bccd2fee8af126b0317e222c28d1d54528d09e"
   dependencies:
