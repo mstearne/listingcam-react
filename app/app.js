@@ -20,6 +20,8 @@ var camURL = {
 	perday_lastV:'',
 	size:'&size=',
 	sizeV:'',
+	date:'&date=',
+	dateV:'',
 	perday_hr:'&perday_hr=',
 	perday_hrV:'',
 	perday_start:'&perday_start=',
@@ -31,7 +33,7 @@ var camURL = {
 	city: '&city=',
 	cityV: '',
 	logo: '&logo=',
-	logoV: ''
+	logoV: 'listingcam-icon.png'
 };
 
 function logChange(val) {
@@ -47,7 +49,7 @@ var GifGen = React.createClass({
 		startDate: moment().add(-4, 'days'),
 		endDate: moment(),
 		settingsModified: false,
-		imgWidth: 550,
+		imgWidth: 150,
 		imgMin: 150,
 		imgMax: 1000,
 		imgSpeed: 10,
@@ -70,6 +72,7 @@ var GifGen = React.createClass({
 		camURL.cityV = firstCam.label;
 		camURL.sizeV = this.state.imgWidth;
 		camURL.speedV = this.state.imgSpeed;
+		camURL.logoV = 'listingcam-icon.png';
 
 		this.genGifURL();
     	return { /* something here */};
@@ -103,7 +106,7 @@ var GifGen = React.createClass({
 		if(this.state.imgWidth<200){
 			camURL.cityV=val.label.substring(0,15);
 		}else{
-			camURL.cityV=val.label;
+			camURL.cityV=val.label.substring(0,15);
 		}
 		this.setState({
 			settingsModified: true,
@@ -111,11 +114,15 @@ var GifGen = React.createClass({
 		});
     },
 	changeImgWidth: function(val) {
-		console.log(val);
+		console.log(document.getElementById("theGif").height);
 		camURL.sizeV=val;
+
+		// document.getElementById("theGif").style.width = val+"px";
+		// document.getElementById("loadingContainer").style.height = document.getElementById("theGif").style.height+'px';
 
 		this.setState({
 			imgWidth: val,
+			imgHeight: document.getElementById("theGif").height,
 			settingsModified: true
         });
     },
@@ -137,7 +144,7 @@ var GifGen = React.createClass({
 
 		this.setState({
 			notes: 'loaded',
-			loadingMessageClass: 'hidden',
+			loadingMessageClass: false,
 			gifContainerClass: 'show',
 			settingsModified: false
 		});
@@ -161,6 +168,7 @@ var GifGen = React.createClass({
 			this.setState({
 				notes: url
 			});
+			console.log(url);
 		}else{
 			console.log(url);
 		}
@@ -180,6 +188,7 @@ var GifGen = React.createClass({
 	  var buttonClass = this.state.liked ? 'active' : '';
 	  var loadingMessageClass = this.state.loadingMessageClass ? 'show' : 'hidden';
 	  var updateImageButtonClass = this.state.settingsModified ? 'show' : 'hidden';
+	  var updatingImageButtonClass = this.state.loadingMessageClass ? 'show' : 'hidden';
 
     return (
 
@@ -187,7 +196,6 @@ var GifGen = React.createClass({
 			<div className="container">
 				<div className="jumbotron">
 					<h2>{this.state.caption}</h2>
-					{/*<Image src={gifURL} width={500} height={300} mode='fit' /> */}
 					<div className="container-fluid bgWhite">
 						<div className="row">
 							<div className="col-md-12 text-center">
@@ -197,31 +205,31 @@ var GifGen = React.createClass({
 										value={this.state.camID}
 										options={CAMS.CAMS}
 										onChange={this.changeCam} />
+									<br />
 								</div>
 
-								<div id="loadingMessage" className={this.state.loadingMessageClass}>
-									<div className="text-center">
-									<div className="uil-cube-css" ><div></div><div></div><div></div><div></div></div>
-									</div>
+								<div id="loadingMessage" className={loadingMessageClass}>
+									<div className="text-center" id=""><img src="/images/poi.gif" id="loadingContainer" height={this.state.imgHeight} /></div>
 								</div>
 								<div className={this.state.gifContainerClass}>
 								<div id="gifContainer" className="text-center">
-									<img id="theGif" src={this.state.gifURL} onLoad={this.handleImageLoaded} />
+									<img id="theGif" src={this.state.gifURL} onLoad={this.handleImageLoaded} width={this.state.imgWidth} />
 								</div>
 								</div>
+								<br />
 
 
 
 							</div>
 						</div>
 						<div className="row">
-							<div className="col-md-6">
+							<div className="col-md-7">
 								<DateRange
 				                    onChange={this.handleChangeDate}
 									calendars="2"
 				                />
 							</div>
-							<div className="col-md-6">
+							<div className="col-md-5">
 								<div>
 
 									<div className="container-fluid">
@@ -270,9 +278,12 @@ var GifGen = React.createClass({
 								<br />
 									<br />
 										<br />
-										<div className={this.state.updateImageButtonClass}>
-										<button onClick={this.updateImage}>Update Image</button>
-										</div>
+											<div className={updateImageButtonClass}>
+											<button onClick={this.updateImage} className="btn btn-primary btn-block">Update Image</button>
+											</div>
+											<div className={updatingImageButtonClass}>
+											<button className="btn btn-primary btn-block" disabled>Updating Image...</button>
+											</div>
 							</div>
 						</div>
 					</div>
