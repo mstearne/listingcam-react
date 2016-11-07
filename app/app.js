@@ -43,19 +43,22 @@ var GifGen = React.createClass({
 	getInitialState: function() {
       return {
         liked: false,
-		caption: 'ListingCam Giffer',
 		startDate: moment().add(-4, 'days'),
 		endDate: moment(),
 		settingsModified: false,
-		imgWidth: 350,
+		imgWidth: 500,
 		imgMin: 150,
 		imgMax: 1000,
 		imgSpeed: 10,
 		imgSpeedMin: 1,
 		imgSpeedMax: 100,
 		perDayHr: 12,
+		perDayHrMin: 7,
+		perDayHrMax: 20,
+		perDayHrVisible: false,
 		loadingMessageClass: 'show',
 		gifContainerClass: 'hidden',
+		dateRangePerDayHrClass: false
       };
     },
 	componentWillMount: function(){
@@ -118,8 +121,17 @@ var GifGen = React.createClass({
 		}else{
 			camURL.perday_startV = moment(range.startDate).format('YYYY-MM-DD').toString();
 			camURL.perday_endV = moment(range.endDate).format('YYYY-MM-DD').toString();
-			if(moment(range.endDate)!=moment(range.startDate)){
+			if(moment(range.endDate)>moment(range.startDate)){
 				// We have a range so show the perday_hr option
+				this.setState({
+					perDayHrVisible: true,
+   					dateRangePerDayHrClass: true
+   			 	});
+			}else{
+				this.setState({
+					perDayHrVisible: false,
+   				 	dateRangePerDayHrClass: false
+   			 	});
 			}
 
 			 this.setState({
@@ -146,7 +158,10 @@ var GifGen = React.createClass({
 		});
   	},
 	changePerDayHr(slider) {
-		console.log(slider);
+//		console.log(slider);
+		if(slider<10){
+			slider = "0"+slider;
+		}
 		camURL.perday_hrV = slider;
 
 		this.setState({
@@ -186,8 +201,10 @@ var GifGen = React.createClass({
   	render: function() {
 	  var buttonClass = this.state.liked ? 'active' : '';
 	  var loadingMessageClass = this.state.loadingMessageClass ? 'show' : 'hidden';
+	  var dateRangePerDayHrClass = this.state.dateRangePerDayHrClass ? 'show' : 'hidden';
 	  var updateImageButtonClass = this.state.settingsModified ? 'show' : 'hidden';
 	  var updatingImageButtonClass = this.state.loadingMessageClass ? 'show' : 'hidden';
+
 	  const settings = {
 		  dots: true,
 	      lazyLoad: true,
@@ -202,7 +219,6 @@ var GifGen = React.createClass({
 		<div className='main-container'>
 			<div className="container">
 				<div className="jumbotron">
-					<h2>{this.state.caption}</h2>
 					<div className="container-fluid bgWhite">
 						<div className="row">
 							<div className="col-md-12">
@@ -274,22 +290,25 @@ var GifGen = React.createClass({
 											</div>
 										</div>
 										<div className="row">
+											<span className={dateRangePerDayHrClass}>
 											<br />
 											<div className="col-md-1">
 												<label>Hour</label>
 											</div>
 											<div className="col-md-10">
-												<SliderPerDayHr
-												  value={this.state.perDayHr}
-												  min={6}
-												  max={20}
-												  onChange={this.changePerDayHr} className="sliders" />
+													{
+													 this.state.perDayHrVisible
+													   ? <SliderPerDayHr value={this.state.perDayHr} min={this.state.perDayHrMin} max={this.state.perDayHrMax} onChange={this.changePerDayHr} className="sliders" />
+													   : null
+													}
+
 											  <br />
-											  <small>Because you selected a date range, you can choose the hour of the day displayed.</small>
+											  <small>Because you've selected a date range, you can choose the hour of the day displayed.</small>
 											</div>
 											<div className="col-md-1">
 												{this.state.perDayHr}
 											</div>
+											</span>
 										</div>
 									</div>
 
@@ -321,4 +340,4 @@ var GifGen = React.createClass({
 });
 
 
-ReactDOM.render(<GifGen src='{this.genGifURL()}' caption='Hong Kong!' />, document.getElementById('app'));
+ReactDOM.render(<GifGen src='{this.genGifURL()}' />, document.getElementById('app'));

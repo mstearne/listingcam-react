@@ -100,19 +100,22 @@
 		getInitialState: function getInitialState() {
 			return {
 				liked: false,
-				caption: 'ListingCam Giffer',
 				startDate: (0, _moment2.default)().add(-4, 'days'),
 				endDate: (0, _moment2.default)(),
 				settingsModified: false,
-				imgWidth: 350,
+				imgWidth: 500,
 				imgMin: 150,
 				imgMax: 1000,
 				imgSpeed: 10,
 				imgSpeedMin: 1,
 				imgSpeedMax: 100,
 				perDayHr: 12,
+				perDayHrMin: 7,
+				perDayHrMax: 20,
+				perDayHrVisible: false,
 				loadingMessageClass: 'show',
-				gifContainerClass: 'hidden'
+				gifContainerClass: 'hidden',
+				dateRangePerDayHrClass: false
 			};
 		},
 		componentWillMount: function componentWillMount() {
@@ -172,8 +175,17 @@
 			} else {
 				camURL.perday_startV = (0, _moment2.default)(range.startDate).format('YYYY-MM-DD').toString();
 				camURL.perday_endV = (0, _moment2.default)(range.endDate).format('YYYY-MM-DD').toString();
-				if ((0, _moment2.default)(range.endDate) != (0, _moment2.default)(range.startDate)) {
+				if ((0, _moment2.default)(range.endDate) > (0, _moment2.default)(range.startDate)) {
 					// We have a range so show the perday_hr option
+					this.setState({
+						perDayHrVisible: true,
+						dateRangePerDayHrClass: true
+					});
+				} else {
+					this.setState({
+						perDayHrVisible: false,
+						dateRangePerDayHrClass: false
+					});
 				}
 
 				this.setState({
@@ -200,7 +212,10 @@
 			});
 		},
 		changePerDayHr: function changePerDayHr(slider) {
-			console.log(slider);
+			//		console.log(slider);
+			if (slider < 10) {
+				slider = "0" + slider;
+			}
 			camURL.perday_hrV = slider;
 
 			this.setState({
@@ -239,8 +254,10 @@
 		render: function render() {
 			var buttonClass = this.state.liked ? 'active' : '';
 			var loadingMessageClass = this.state.loadingMessageClass ? 'show' : 'hidden';
+			var dateRangePerDayHrClass = this.state.dateRangePerDayHrClass ? 'show' : 'hidden';
 			var updateImageButtonClass = this.state.settingsModified ? 'show' : 'hidden';
 			var updatingImageButtonClass = this.state.loadingMessageClass ? 'show' : 'hidden';
+
 			var settings = {
 				dots: true,
 				lazyLoad: true,
@@ -259,11 +276,6 @@
 					React.createElement(
 						'div',
 						{ className: 'jumbotron' },
-						React.createElement(
-							'h2',
-							null,
-							this.state.caption
-						),
 						React.createElement(
 							'div',
 							{ className: 'container-fluid bgWhite' },
@@ -384,35 +396,35 @@
 											React.createElement(
 												'div',
 												{ className: 'row' },
-												React.createElement('br', null),
 												React.createElement(
-													'div',
-													{ className: 'col-md-1' },
-													React.createElement(
-														'label',
-														null,
-														'Hour'
-													)
-												),
-												React.createElement(
-													'div',
-													{ className: 'col-md-10' },
-													React.createElement(SliderPerDayHr, {
-														value: this.state.perDayHr,
-														min: 6,
-														max: 20,
-														onChange: this.changePerDayHr, className: 'sliders' }),
+													'span',
+													{ className: dateRangePerDayHrClass },
 													React.createElement('br', null),
 													React.createElement(
-														'small',
-														null,
-														'Because you selected a date range, you can choose the hour of the day displayed.'
+														'div',
+														{ className: 'col-md-1' },
+														React.createElement(
+															'label',
+															null,
+															'Hour'
+														)
+													),
+													React.createElement(
+														'div',
+														{ className: 'col-md-10' },
+														this.state.perDayHrVisible ? React.createElement(SliderPerDayHr, { value: this.state.perDayHr, min: this.state.perDayHrMin, max: this.state.perDayHrMax, onChange: this.changePerDayHr, className: 'sliders' }) : null,
+														React.createElement('br', null),
+														React.createElement(
+															'small',
+															null,
+															'Because you\'ve selected a date range, you can choose the hour of the day displayed.'
+														)
+													),
+													React.createElement(
+														'div',
+														{ className: 'col-md-1' },
+														this.state.perDayHr
 													)
-												),
-												React.createElement(
-													'div',
-													{ className: 'col-md-1' },
-													this.state.perDayHr
 												)
 											)
 										)
@@ -457,7 +469,7 @@
 		}
 	});
 
-	ReactDOM.render(React.createElement(GifGen, { src: '{this.genGifURL()}', caption: 'Hong Kong!' }), document.getElementById('app'));
+	ReactDOM.render(React.createElement(GifGen, { src: '{this.genGifURL()}' }), document.getElementById('app'));
 
 /***/ },
 /* 1 */
