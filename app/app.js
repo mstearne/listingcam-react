@@ -10,7 +10,7 @@ const CAMS = require('./data/cams');
 const today = moment();
 var SliderSpeed = require('nw-react-slider')
 var SliderSize = require('nw-react-slider')
-
+var SliderPerDayHr = require('nw-react-slider')
 
 var camURL = {
 	start_url: 'http://listingcam.com/includes/animegif/gif.php?',
@@ -20,8 +20,6 @@ var camURL = {
 	perday_lastV:'',
 	size:'&size=',
 	sizeV:'',
-	date:'&date=',
-	dateV:'',
 	perday_hr:'&perday_hr=',
 	perday_hrV:'',
 	perday_start:'&perday_start=',
@@ -30,10 +28,10 @@ var camURL = {
 	perday_endV:'',
 	speed: '&speed=',
 	speedV: '',
-	city: '&city=',
-	cityV: '',
 	logo: '&logo=',
-	logoV: 'listingcam-icon.png'
+	logoV: 'listingcam-icon.png',
+	city: '&city=',
+	cityV: ''
 };
 
 function logChange(val) {
@@ -49,12 +47,13 @@ var GifGen = React.createClass({
 		startDate: moment().add(-4, 'days'),
 		endDate: moment(),
 		settingsModified: false,
-		imgWidth: 150,
+		imgWidth: 350,
 		imgMin: 150,
 		imgMax: 1000,
 		imgSpeed: 10,
 		imgSpeedMin: 1,
 		imgSpeedMax: 100,
+		perDayHr: 12,
 		loadingMessageClass: 'show',
 		gifContainerClass: 'hidden',
       };
@@ -91,23 +90,9 @@ var GifGen = React.createClass({
 	},
 
 
-	handleChangeStartDate: function(date) {
-		if(date>this.state.endDate){
-			alert("start date must be before end date");
-		}else{
-			this.setState({
-	  		  startDate: date
-	        });
-		}
-    },
 	changeCam: function(val) {
 		console.log(val);
 		camURL.cam_idV=val.value;
-		if(this.state.imgWidth<200){
-			camURL.cityV=val.label.substring(0,15);
-		}else{
-			camURL.cityV=val.label.substring(0,15);
-		}
 		this.setState({
 			settingsModified: true,
 			camID: val.value,
@@ -133,6 +118,9 @@ var GifGen = React.createClass({
 		}else{
 			camURL.perday_startV = moment(range.startDate).format('YYYY-MM-DD').toString();
 			camURL.perday_endV = moment(range.endDate).format('YYYY-MM-DD').toString();
+			if(moment(range.endDate)!=moment(range.startDate)){
+				// We have a range so show the perday_hr option
+			}
 
 			 this.setState({
 				 settingsModified: true
@@ -143,7 +131,6 @@ var GifGen = React.createClass({
 		console.log("Image Loaded");
 
 		this.setState({
-			notes: 'loaded',
 			loadingMessageClass: false,
 			gifContainerClass: 'show',
 			settingsModified: false
@@ -158,7 +145,18 @@ var GifGen = React.createClass({
 			settingsModified: true
 		});
   	},
+	changePerDayHr(slider) {
+		console.log(slider);
+		camURL.perday_hrV = slider;
+
+		this.setState({
+			perDayHr: slider,
+			settingsModified: true
+		});
+  	},
 	genGifURL(){
+
+
 		var arr = Object.keys(camURL).reduce(function(res, v) {
 		    return res.concat(camURL[v]);
 		}, []);
@@ -180,7 +178,8 @@ var GifGen = React.createClass({
 	  		gifURL: this.genGifURL(),
 			loadingMessageClass: 'show',
 			gifContainerClass: 'hidden',
-			settingsModified: false
+			settingsModified: false,
+			notes:this.genGifURL()
         });
 
 	},
@@ -189,7 +188,15 @@ var GifGen = React.createClass({
 	  var loadingMessageClass = this.state.loadingMessageClass ? 'show' : 'hidden';
 	  var updateImageButtonClass = this.state.settingsModified ? 'show' : 'hidden';
 	  var updatingImageButtonClass = this.state.loadingMessageClass ? 'show' : 'hidden';
-
+	  const settings = {
+		  dots: true,
+	      lazyLoad: true,
+	      infinite: true,
+	      speed: 500,
+	      slidesToShow: 10,
+	      slidesToScroll: 1,
+	      initialSlide: 2
+	  	      };
     return (
 
 		<div className='main-container'>
@@ -198,7 +205,7 @@ var GifGen = React.createClass({
 					<h2>{this.state.caption}</h2>
 					<div className="container-fluid bgWhite">
 						<div className="row">
-							<div className="col-md-12 text-center">
+							<div className="col-md-12">
 								<div>
 									<Select
 										name="camSelect"
@@ -227,6 +234,8 @@ var GifGen = React.createClass({
 								<DateRange
 				                    onChange={this.handleChangeDate}
 									calendars="2"
+									maxDate={moment()}
+									minDate={moment().add(-400, 'days')}
 				                />
 							</div>
 							<div className="col-md-5">
@@ -249,14 +258,6 @@ var GifGen = React.createClass({
 												{this.state.imgWidth}
 											</div>
 										</div>
-									</div>
-
-			  					</div>
-								<br />
-									<br />
-										<br />
-								<div>
-									<div className="container-fluid">
 										<div className="row">
 											<div className="col-md-1">
 												<label>Speed</label>
@@ -270,6 +271,24 @@ var GifGen = React.createClass({
 											</div>
 											<div className="col-md-1">
 												{this.state.imgSpeed}
+											</div>
+										</div>
+										<div className="row">
+											<br />
+											<div className="col-md-1">
+												<label>Hour</label>
+											</div>
+											<div className="col-md-10">
+												<SliderPerDayHr
+												  value={this.state.perDayHr}
+												  min={6}
+												  max={20}
+												  onChange={this.changePerDayHr} className="sliders" />
+											  <br />
+											  <small>Because you selected a date range, you can choose the hour of the day displayed.</small>
+											</div>
+											<div className="col-md-1">
+												{this.state.perDayHr}
 											</div>
 										</div>
 									</div>
